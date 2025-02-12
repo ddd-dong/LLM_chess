@@ -1,0 +1,15 @@
+# env
+.env
+*.env
+!example.env
+
+
+# chess engine
+stockfish
+stockfish-windows-x86-64-avx2.zip
+
+#conda
+.conda
+
+#pyc     
+__pycache__
