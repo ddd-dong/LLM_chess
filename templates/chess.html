@@ -4,6 +4,9 @@
     <title>Chess Game</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
     <style>
+        .highlight-square {
+            background: #fff68f !important;
+        }
         .container {
             max-width: 800px;
             margin: 20px auto;
@@ -26,8 +29,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="board"></div>
+    <div class="container">        <div id="board"></div>
         <div class="game-info">
             <button id="newGame" class="btn">New Game</button>
             <p id="status"></p>

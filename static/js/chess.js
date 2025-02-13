@@ -1,9 +1,19 @@
 let board = null;
-let socket = io();
+let socket = null;
 let gameId = null;
+let lastMove = null;
 
 function onDragStart(source, piece) {
-    return piece.search(/^w/) !== -1;
+    return true; // Allow any piece to move
+}
+
+function highlightSquare(square) {
+    const $square = $('#board .square-' + square);
+    $square.addClass('highlight-square');
+}
+
+function removeHighlights() {
+    $('#board .square-55d63').removeClass('highlight-square');
 }
 
 function onDrop(source, target) {
@@ -17,9 +27,6 @@ function onDrop(source, target) {
     })
     .then(response => response.json())
     .then(data => {
-        if (!data.success) {
-            return 'snapback';
-        }
         updateStatus(data.state);
     });
 }
@@ -27,6 +34,16 @@ function onDrop(source, target) {
 function updateStatus(state) {
     const statusEl = document.getElementById('status');
     board.position(state.fen);
+    
+    removeHighlights();
+    if (state.last_move) {
+        const [source, target] = [
+            state.last_move.slice(0,2),
+            state.last_move.slice(2,4)
+        ];
+        highlightSquare(source);
+        highlightSquare(target);
+    }
     
     if (state.game_over) {
         statusEl.textContent = state.winner ? 
@@ -46,12 +63,6 @@ function startNewGame() {
         });
 }
 
-socket.on('game_update', function(data) {
-    if (data.game_id === gameId) {
-        updateStatus(data.state);
-    }
-});
-
 window.onload = function() {
     const config = {
         draggable: true,
@@ -62,6 +73,14 @@ window.onload = function() {
     };
     
     board = Chessboard('board', config);
+    socket = io();
+    
+    socket.on('game_update', function(data) {
+        if (data.game_id === gameId) {
+            updateStatus(data.state);
+        }
+    });
+    
     document.getElementById('newGame').addEventListener('click', startNewGame);
     startNewGame();
 };
